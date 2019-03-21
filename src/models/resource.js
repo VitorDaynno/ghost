@@ -13,6 +13,10 @@ module.exports = () => {
             required: true,
             enum: ['database', 'server', 'service'],
         },
+        data: {
+            type: Object,
+            required: true,
+        },
         status: {
             type: String,
             required: true,

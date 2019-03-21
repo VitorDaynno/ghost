@@ -23,6 +23,7 @@
     "lodash": "4.17.11",
     "method-override": "3.0.0",
     "mongoose": "5.2.7",
+    "ping": "0.2.2",
     "promise": "8.0.1",
     "winston": "3.0.0"
   },
