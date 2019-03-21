@@ -1,39 +1,43 @@
-var chai = require('chai');
-var expect = chai.expect;
-var sinon = require('sinon');
-var ResourceDAO = require('../../../src/daos/resourceDAO');
-var resourceModel = require('../../../src/models/resource')();
-var DateHelper = require('../../../src/helpers/dateHelper');
-var sinonMongoose = require('sinon-mongoose');
+const chai = require('chai');
+const sinon = require('sinon');
+const mocha = require('mocha');
+require('sinon-mongoose');
 
-describe('resourceDAO', function(){
+const { expect } = chai;
+const { describe, it } = mocha;
 
-    var resourceDAO = new ResourceDAO({
-        resource: resourceModel
+const ResourceDAO = require('../../../src/daos/resourceDAO');
+const resourceModel = require('../../../src/models/resource')();
+const DateHelper = require('../../../src/helpers/dateHelper');
+
+
+describe('resourceDAO', () => {
+    const resourceDAO = new ResourceDAO({
+        resource: resourceModel,
     });
 
-    var date = new Date();
+    const date = new Date();
 
-    describe('save', function(){
-        it('Should return error because object is empty', function(){
-            var createStub = sinon.mock(resourceModel).expects('create')
+    describe('save', () => {
+        it('Should return error because object is empty', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
                 .withArgs({})
                 .rejects();
 
             return resourceDAO.save({})
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return error because object not contains email', function(){
-            var createStub = sinon.mock(resourceModel).expects('create')
-                .withArgs({name: 'test', password: '123', creationDate: DateHelper.now()})
+        it('Should return error because object not contains email', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({ name: 'test', password: '123', creationDate: DateHelper.now() })
                 .rejects();
 
-            return resourceDAO.save({name: 'test', password: '123', creationDate: DateHelper.now()})
+            return resourceDAO.save({ name: 'test', password: '123', creationDate: DateHelper.now() })
                 .then()
                 .catch(function(){
                     expect(createStub.callCount).to.be.equals(1);
