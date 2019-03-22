@@ -4,7 +4,12 @@ const mocha = require('mocha');
 require('sinon-mongoose');
 
 const { expect } = chai;
-const { describe, it } = mocha;
+const {
+    describe,
+    it,
+    beforeEach,
+    afterEach,
+} = mocha;
 
 const ResourceDAO = require('../../../src/daos/resourceDAO');
 const resourceModel = require('../../../src/models/resource')();
@@ -16,7 +21,19 @@ describe('resourceDAO', () => {
         resource: resourceModel,
     });
 
-    const date = new Date();
+    let date;
+    let nowStub;
+
+    beforeEach(() => {
+        nowStub = sinon.stub(DateHelper, 'now');
+        date = new Date();
+        nowStub
+            .returns(date);
+    });
+
+    afterEach(() => {
+        nowStub.restore();
+    });
 
     describe('save', () => {
         it('Should return error because object is empty', () => {
@@ -32,57 +49,203 @@ describe('resourceDAO', () => {
                 });
         });
 
-        it('Should return error because object not contains email', () => {
+        it('Should return error because object not contains name', () => {
             const createStub = sinon.mock(resourceModel).expects('create')
-                .withArgs({ name: 'test', password: '123', creationDate: DateHelper.now() })
+                .withArgs({
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                })
                 .rejects();
 
-            return resourceDAO.save({ name: 'test', password: '123', creationDate: DateHelper.now() })
+            return resourceDAO.save({
+                type: 'database',
+                data: {},
+                status: 'on',
+                creationDate: nowStub.now(),
+            })
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return error because object not contains name', function(){
-            var createStub = sinon.mock(resourceModel).expects('create')
-                .withArgs({email: 'email@test.com', password: '123', creationDate: date})
+        it('Should return error because object not contains type', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    data: {},
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                })
                 .rejects();
 
-            return resourceDAO.save({email: 'email@test.com', password: '123', creationDate: date})
+            return resourceDAO.save({
+                name: 'resource-test',
+                data: {},
+                status: 'on',
+                creationDate: nowStub.now(),
+            })
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return error because object not contains password', function(){
-            var createStub = sinon.mock(resourceModel).expects('create')
-                .withArgs({email: 'email@test.com', name: 'test', creationDate: DateHelper.now()})
+        it('Should return error because object not contains data', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                })
                 .rejects();
 
-            return resourceDAO.save({email: 'email@test.com', name: 'test', creationDate: DateHelper.now()})
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'database',
+                status: 'on',
+                creationDate: nowStub.now(),
+            })
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return a resource with success', function(){
-            var createStub = sinon.mock(resourceModel).expects('create')
-                .withArgs({email: 'email@test.com', name: 'test', password: '123', creationDate: date})
-                .resolves({_id: '5c05e59193a46d0d7464bdde', email: 'email@test.com', name: 'test', password: '123', creationDate: date});
+        it('Should return error because object not contains status', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    creationDate: nowStub.now(),
+                })
+                .rejects();
 
-            return resourceDAO.save({email: 'email@test.com', name: 'test', password: '123', creationDate: date})
-                .then(function(resource){
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                creationDate: nowStub.now(),
+            })
+                .then()
+                .catch(() => {
+                    expect(createStub.callCount).to.be.equals(1);
+                    sinon.restore();
+                });
+        });
+
+        it('Should return error because object not contains creationDate', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                })
+                .rejects();
+
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                status: 'on',
+            })
+                .then()
+                .catch(() => {
+                    expect(createStub.callCount).to.be.equals(1);
+                    sinon.restore();
+                });
+        });
+
+        it('Should return error because object contains incorrect type', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'wrong type',
+                    data: {},
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                })
+                .rejects();
+
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'wrong type',
+                data: {},
+                status: 'on',
+                creationDate: nowStub.now(),
+            })
+                .then()
+                .catch(() => {
+                    expect(createStub.callCount).to.be.equals(1);
+                    sinon.restore();
+                });
+        });
+
+        it('Should return error because object contains incorrect status', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'crashed',
+                    creationDate: nowStub.now(),
+                })
+                .rejects();
+
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                status: 'crashed',
+                creationDate: nowStub.now(),
+            })
+                .then()
+                .catch(() => {
+                    expect(createStub.callCount).to.be.equals(1);
+                    sinon.restore();
+                });
+        });
+
+        it('Should return a resource with success', () => {
+            const createStub = sinon.mock(resourceModel).expects('create')
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                })
+                .resolves({
+                    _id: '5c05e59193a46d0d7464bdde',
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    creationDate: nowStub.now(),
+                });
+
+            return resourceDAO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                status: 'on',
+                creationDate: nowStub.now(),
+            })
+                .then((resource) => {
                     expect(resource._id).to.be.equal('5c05e59193a46d0d7464bdde');
-                    expect(resource.email).to.be.equal('email@test.com');
-                    expect(resource.name).to.be.equal('test');
-                    expect(resource.password).to.be.equal('123');
-                    expect(resource.creationDate).to.be.equal(date);
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('database');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('on');
+                    expect(resource.creationDate).to.be.equal(nowStub.now());
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });

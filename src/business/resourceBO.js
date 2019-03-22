@@ -3,9 +3,7 @@ const logger = require('../config/logger')();
 class ResourceBO {
     constructor(dependencies) {
         this.dao = dependencies.resourceDAO;
-        this.jwt = dependencies.jwtHelper;
         this.modelHelper = dependencies.modelHelper;
-        this.cryptoHelper = dependencies.cryptoHelper;
         this.dateHelper = dependencies.dateHelper;
     }
 
@@ -49,43 +47,44 @@ class ResourceBO {
             const chain = Promise.resolve();
             chain
                 .then(() => {
-                    if (!body || !body.email) {
-                        logger.error(`[ResourceBO] Email not found in: ${JSON.stringify(body)}`);
-                        const error = { code: 422, message: 'Email are required' };
-                        throw error;
-                    }
-                    if (!body.name) {
+                    if (!body || !body.name) {
                         logger.error(`[ResourceBO] Name not found in: ${JSON.stringify(body)}`);
-                        const error = { code: 422, message: 'Name are required' };
+                        const error = { code: 422, message: 'name are required' };
                         throw error;
                     }
-                    if (!body.password) {
-                        logger.error(`[ResourceBO] Password not found in: ${JSON.stringify(body)}`);
-                        const error = { code: 422, message: 'Password are required' };
+                    if (!body.type) {
+                        logger.error(`[ResourceBO] Type not found in: ${JSON.stringify(body)}`);
+                        const error = { code: 422, message: 'type are required' };
+                        throw error;
+                    }
+                    if (!body.data) {
+                        logger.error(`[ResourceBO] Data not found in: ${JSON.stringify(body)}`);
+                        const error = { code: 422, message: 'data are required' };
+                        throw error;
+                    }
+                    if (!body.status) {
+                        logger.error(`[ResourceBO] Status not found in: ${JSON.stringify(body)}`);
+                        const error = { code: 422, message: 'status are required' };
+                        throw error;
+                    }
+                    if (!['database', 'server', 'service'].includes(body.type)) {
+                        logger.error(`[ResourceBO] Type not valid in: ${JSON.stringify(body)}`);
+                        const error = { code: 422, message: 'type is invalid' };
+                        throw error;
+                    }
+                    if (!['on', 'off'].includes(body.status)) {
+                        logger.error(`[ResourceBO] Status not valid in: ${JSON.stringify(body)}`);
+                        const error = { code: 422, message: 'status is invalid' };
                         throw error;
                     }
                 })
                 .then(() => {
-                    logger.info(`[ResourceBO] Validating a email "${body.email}" in database`);
-                    return this.dao.getAll({ email: body.email, isEnabled: true });
-                })
-                .then((resource) => {
-                    if (resource && resource.length > 0) {
-                        logger.error(`[ResourceBO] The email "${resource.email}" is already in the database`);
-                        const error = { code: 409, message: 'Entered email is already being used' };
-                        throw error;
-                    }
-                })
-                .then(() => {
-                    logger.info(`[ResourceBO] Encrypting a password of ${body.name}`);
-                    return this.cryptoHelper.encrypt(body.password);
-                })
-                .then((password) => {
                     logger.info('[ResourceBO] Saving resource in database');
                     const resource = {};
                     resource.name = body.name;
-                    resource.email = body.email;
-                    resource.password = password;
+                    resource.type = body.type;
+                    resource.data = body.data;
+                    resource.status = body.status;
                     resource.isEnabled = true;
                     resource.creationDate = this.dateHelper.now();
                     return this.dao.save(resource);

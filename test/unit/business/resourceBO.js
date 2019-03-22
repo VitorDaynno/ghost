@@ -1,215 +1,457 @@
-var chai = require('chai');
-var expect = chai.expect;
-var sinon = require('sinon');
-var ResourceBO = require('../../../src/business/resourceBO.js');
-var DAOFactory = require('../../../src/factories/factoryDAO');
-var JWTHelper = require('../../../src/helpers/jwtHelper');
-var ModelHelper = require('../../../src/helpers/modelHelper');
-var CryptoHelper = require('../../../src/helpers/cryptoHelper');
-var DateHelper = require('../../../src/helpers/dateHelper');
+const chai = require('chai');
+const sinon = require('sinon');
+const mocha = require('mocha');
 
-describe('resourceBO', function(){
-    var resourceDAO = DAOFactory.getDAO('resource');
-    var jwtHelper = new JWTHelper();
+const ResourceBO = require('../../../src/business/resourceBO.js');
+const DAOFactory = require('../../../src/factories/factoryDAO');
+const ModelHelper = require('../../../src/helpers/modelHelper');
+const DateHelper = require('../../../src/helpers/dateHelper');
 
-    var resourceBO = new ResourceBO({
-        resourceDAO: resourceDAO,
-        jwtHelper: jwtHelper,
+const { expect } = chai;
+const {
+    describe,
+    it,
+    beforeEach,
+    afterEach,
+} = mocha;
+
+describe('resourceBO', () => {
+    const resourceDAO = DAOFactory.getDAO('resource');
+
+    const resourceBO = new ResourceBO({
+        resourceDAO,
         modelHelper: ModelHelper,
-        cryptoHelper: CryptoHelper,
-        dateHelper: DateHelper
+        dateHelper: DateHelper,
     });
 
-    var nowStub;
-    var date;
+    let nowStub;
+    let date;
+    let getAllStub;
+    let saveStub;
+    let parseResourceStub;
 
-    beforeEach(function() {
+    beforeEach(() => {
+        getAllStub = sinon.stub(resourceDAO, 'getAll');
+        saveStub = sinon.stub(resourceDAO, 'save');
+        parseResourceStub = sinon.stub(ModelHelper, 'parseResource');
+
         nowStub = sinon.stub(DateHelper, 'now');
         date = new Date();
         nowStub
             .returns(date);
     });
 
-    afterEach(function() {
+    afterEach(() => {
+        getAllStub.restore();
+        saveStub.restore();
+        parseResourceStub.restore();
         nowStub.restore();
-    });    
+    });
 
-    describe('save', function(){
-        it('Should return error when body does not exist', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            var saveStub = sinon.stub(resourceDAO, 'save');
-            var encodeTokenStub = sinon.stub(CryptoHelper, 'encrypt');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
+    describe('save', () => {
+        it('Should return error when body does not exist', () => {
             return resourceBO.save()
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Email are required');
-                        expect(getAllStub.callCount).to.be.equals(0);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encodeTokenStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encodeTokenStub.restore();
-                        parseUserStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('name are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('Should return error when body is empty', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            var saveStub = sinon.stub(resourceDAO, 'save');
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
+        it('Should return error when body is empty', () => {
             return resourceBO.save({})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Email are required');
-                        expect(getAllStub.callCount).to.be.equals(0);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encryptStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('name are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('Should return error when body not contains email', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            var saveStub = sinon.stub(resourceDAO, 'save');
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
-            return resourceBO.save({name: 'test', 'password': '123'})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Email are required');
-                        expect(getAllStub.callCount).to.be.equals(0);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encryptStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+        it('Should return error when body not contains name', () => {
+            return resourceBO.save({
+                type: 'database',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('name are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('Should return error when body not contains name', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            var saveStub = sinon.stub(resourceDAO, 'save');
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
-            return resourceBO.save({email: 'test@mailtest.com', password: '123'})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Name are required');
-                        expect(getAllStub.callCount).to.be.equals(0);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encryptStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+        it('Should return error when body not contains type', () => {
+            return resourceBO.save({
+                name: 'resource-test',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('type are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('Should return error when body not contains password', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            var saveStub = sinon.stub(resourceDAO, 'save');
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
-            return resourceBO.save({email: 'test@mailtest.com', name: 'test'})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Password are required');
-                        expect(getAllStub.callCount).to.be.equals(0);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encryptStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+        it('Should return error when body not contains data', () => {
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'database',
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('data are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('Should return a resource when entity are correct', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            getAllStub
-                .withArgs({email:'tests@mailtest.com'})
-                .returns(Promise.resolve({}));
-
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
-            encryptStub
-                .withArgs('123')
-                .returns('efb0dd98ad3df96b06ce7fc361b2938826e9ccbac0cf31dba3c690b447254d19');
-
-            var saveStub = sinon.stub(resourceDAO, 'save');
+        it('Should return error when body not contains status', () => {
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('status are required');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
+        });
+        it('Should return error when type is invalid', () => {
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'wrong type',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('type is invalid');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
+        });
+        it('Should return error when status is invalid', () => {
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                status: 'moved',
+                creationDate: DateHelper.now(),
+            })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('status is invalid');
+                    expect(getAllStub.callCount).to.be.equals(0);
+                    expect(saveStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
+        });
+        it('Should return a resource when entity are correct with type database', () => {
             saveStub
-                .withArgs({email: 'test@mailtest.com', name: 'test', password: 'efb0dd98ad3df96b06ce7fc361b2938826e9ccbac0cf31dba3c690b447254d19', isEnabled: true, creationDate: date})
-                .returns({_id: '5c088673fb2f579adcca9ed1', email: 'test@mailtest.com', name: 'test',
-                            password: 'efb0dd98ad3df96b06ce7fc361b2938826e9ccbac0cf31dba3c690b447254d19', isEnabled: true, creationDate: date});
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                });
 
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-            parseUserStub
-                .withArgs({_id: '5c088673fb2f579adcca9ed1', email: 'test@mailtest.com', name: 'test',
-                            password: 'efb0dd98ad3df96b06ce7fc361b2938826e9ccbac0cf31dba3c690b447254d19', isEnabled: true, creationDate: date})
-                .returns({id: '5c088673fb2f579adcca9ed1', email: 'test@mailtest.com', name: 'test'});
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'database',
+                    data: {},
+                    status: 'on',
+                });
 
-            return resourceBO.save({email: 'test@mailtest.com', name: 'test', password: '123'})
-                    .then(function(resource) {
-                        expect(resource).to.be.eqls({id: '5c088673fb2f579adcca9ed1', email: 'test@mailtest.com', name: 'test'});
-                        expect(getAllStub.callCount).to.be.equals(1);
-                        expect(saveStub.callCount).to.be.equals(1);
-                        expect(encryptStub.callCount).to.be.equals(1);
-                        expect(parseUserStub.callCount).to.be.equals(1);
-                        expect(nowStub.callCount).to.be.equals(1);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'database',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then((resource) => {
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('database');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('on');
+                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(saveStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
         });
-        it('Should return a error when entity already exist', function(){
-            var getAllStub = sinon.stub(resourceDAO, 'getAll');
-            getAllStub
-                .withArgs({email:'test@mailtest.com', isEnabled: true})
-                .returns([{_id: '5c088673fb2f579adcca9ed1', email: 'test@mailtest.com', name: 'test',
-                            password: 'efb0dd98ad3df96b06ce7fc361b2938826e9ccbac0cf31dba3c690b447254d19', isEnabled: true, creationDate: date}]);
+        it('Should return a resource when entity are correct with type service', () => {
+            saveStub
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'service',
+                    data: {},
+                    status: 'on',
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'service',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                });
 
-            var encryptStub = sinon.stub(CryptoHelper, 'encrypt');
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'service',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'service',
+                    data: {},
+                    status: 'on',
+                });
 
-            var saveStub = sinon.stub(resourceDAO, 'save');
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'service',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then((resource) => {
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('service');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('on');
+                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(saveStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
+        });
+        it('Should return a resource when entity are correct with type server', () => {
+            saveStub
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                });
 
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                });
 
-            return resourceBO.save({email: 'test@mailtest.com', name: 'test', password: '123'})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.eqls(409);
-                        expect(error.message).to.be.equals('Entered email is already being used');
-                        expect(getAllStub.callCount).to.be.equals(1);
-                        expect(saveStub.callCount).to.be.equals(0);
-                        expect(encryptStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getAllStub.restore();
-                        saveStub.restore();
-                        encryptStub.restore();
-                        parseUserStub.restore();
-                    });
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then((resource) => {
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('on');
+                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(saveStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
+        });
+        it('Should return a resource when entity are correct with status on', () => {
+            saveStub
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                });
+
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'on',
+                });
+
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'on',
+                creationDate: DateHelper.now(),
+            })
+                .then((resource) => {
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('on');
+                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(saveStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
+        });
+        it('Should return a resource when entity are correct with status off', () => {
+            saveStub
+                .withArgs({
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                });
+
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: DateHelper.now(),
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                });
+
+            return resourceBO.save({
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'off',
+                creationDate: DateHelper.now(),
+            })
+                .then((resource) => {
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('off');
+                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(saveStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
         });
     });
 

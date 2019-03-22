@@ -20,6 +20,7 @@ module.exports = () => {
         status: {
             type: String,
             required: true,
+            enum: ['on', 'off'],
         },
         creationDate: {
             type: Date,

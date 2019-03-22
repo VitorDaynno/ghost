@@ -13,6 +13,11 @@ module.exports = {
 
         entity.id = resource._id;
         entity.name = resource.name;
+        entity.type = resource.type;
+        entity.data = resource.data;
+        entity.status = resource.status;
+        entity.creationDate = resource.creationDate;
+        entity.modificationDate = resource.modificationDate;
 
         return entity;
     },
