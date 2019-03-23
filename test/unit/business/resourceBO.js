@@ -28,11 +28,14 @@ describe('resourceBO', () => {
     let date;
     let getAllStub;
     let saveStub;
+    let getByIdStub;
     let parseResourceStub;
+    
 
     beforeEach(() => {
         getAllStub = sinon.stub(resourceDAO, 'getAll');
         saveStub = sinon.stub(resourceDAO, 'save');
+        getByIdStub = sinon.stub(resourceDAO, 'getById');
         parseResourceStub = sinon.stub(ModelHelper, 'parseResource');
 
         nowStub = sinon.stub(DateHelper, 'now');
@@ -46,11 +49,11 @@ describe('resourceBO', () => {
         saveStub.restore();
         parseResourceStub.restore();
         nowStub.restore();
+        getByIdStub.restore();
     });
 
     describe('save', () => {
-        it('Should return error when body does not exist', () => {
-            return resourceBO.save()
+        it('Should return error when body does not exist', () => resourceBO.save()
                 .then()
                 .catch((error) => {
                     expect(error.code).to.be.equals(422);
@@ -59,10 +62,8 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when body is empty', () => {
-            return resourceBO.save({})
+                }));
+        it('Should return error when body is empty', () => resourceBO.save({})
                 .then()
                 .catch((error) => {
                     expect(error.code).to.be.equals(422);
@@ -71,14 +72,11 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when body not contains name', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when body not contains name', () => resourceBO.save({
                 type: 'database',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -88,14 +86,11 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when body not contains type', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when body not contains type', () => resourceBO.save({
                 name: 'resource-test',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -105,14 +100,11 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when body not contains data', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when body not contains data', () => resourceBO.save({
                 name: 'resource-test',
                 type: 'database',
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -122,14 +114,11 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when body not contains status', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when body not contains status', () => resourceBO.save({
                 name: 'resource-test',
                 type: 'database',
                 data: {},
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -139,15 +128,12 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when type is invalid', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when type is invalid', () => resourceBO.save({
                 name: 'resource-test',
                 type: 'wrong type',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -157,15 +143,12 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
-        it('Should return error when status is invalid', () => {
-            return resourceBO.save({
+                }));
+        it('Should return error when status is invalid', () => resourceBO.save({
                 name: 'resource-test',
                 type: 'database',
                 data: {},
                 status: 'moved',
-                creationDate: DateHelper.now(),
             })
                 .then()
                 .catch((error) => {
@@ -175,8 +158,7 @@ describe('resourceBO', () => {
                     expect(saveStub.callCount).to.be.equals(0);
                     expect(parseResourceStub.callCount).to.be.equals(0);
                     expect(nowStub.callCount).to.be.equals(0);
-                });
-        });
+                }));
         it('Should return a resource when entity are correct with type database', () => {
             saveStub
                 .withArgs({
@@ -185,7 +167,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     _id: '5c088673fb2f579adcca9ed1',
@@ -194,7 +176,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 });
 
             parseResourceStub
@@ -205,7 +187,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     id: '5c088673fb2f579adcca9ed1',
@@ -213,6 +195,7 @@ describe('resourceBO', () => {
                     type: 'database',
                     data: {},
                     status: 'on',
+                    creationDate: date,
                 });
 
             return resourceBO.save({
@@ -220,14 +203,13 @@ describe('resourceBO', () => {
                 type: 'database',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then((resource) => {
                     expect(resource.name).to.be.equal('resource-test');
                     expect(resource.type).to.be.equal('database');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('on');
-                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(saveStub.callCount).to.be.equals(1);
                     expect(parseResourceStub.callCount).to.be.equals(1);
                     expect(nowStub.callCount).to.be.equals(1);
@@ -240,7 +222,8 @@ describe('resourceBO', () => {
                     type: 'service',
                     data: {},
                     status: 'on',
-                    creationDate: DateHelper.now(),
+                    isEnabled: true,
+                    creationDate: date,
                 })
                 .returns({
                     _id: '5c088673fb2f579adcca9ed1',
@@ -249,7 +232,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 });
 
             parseResourceStub
@@ -260,7 +243,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     id: '5c088673fb2f579adcca9ed1',
@@ -268,6 +251,7 @@ describe('resourceBO', () => {
                     type: 'service',
                     data: {},
                     status: 'on',
+                    creationDate: date,
                 });
 
             return resourceBO.save({
@@ -275,14 +259,13 @@ describe('resourceBO', () => {
                 type: 'service',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
             })
                 .then((resource) => {
                     expect(resource.name).to.be.equal('resource-test');
                     expect(resource.type).to.be.equal('service');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('on');
-                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(saveStub.callCount).to.be.equals(1);
                     expect(parseResourceStub.callCount).to.be.equals(1);
                     expect(nowStub.callCount).to.be.equals(1);
@@ -295,7 +278,8 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'on',
-                    creationDate: DateHelper.now(),
+                    isEnabled: true,
+                    creationDate: date,
                 })
                 .returns({
                     _id: '5c088673fb2f579adcca9ed1',
@@ -304,7 +288,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 });
 
             parseResourceStub
@@ -315,7 +299,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     id: '5c088673fb2f579adcca9ed1',
@@ -323,6 +307,7 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'on',
+                    creationDate: date,
                 });
 
             return resourceBO.save({
@@ -330,14 +315,14 @@ describe('resourceBO', () => {
                 type: 'server',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
+                creationDate: date,
             })
                 .then((resource) => {
                     expect(resource.name).to.be.equal('resource-test');
                     expect(resource.type).to.be.equal('server');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('on');
-                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(saveStub.callCount).to.be.equals(1);
                     expect(parseResourceStub.callCount).to.be.equals(1);
                     expect(nowStub.callCount).to.be.equals(1);
@@ -350,7 +335,8 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'on',
-                    creationDate: DateHelper.now(),
+                    isEnabled: true,
+                    creationDate: date,
                 })
                 .returns({
                     _id: '5c088673fb2f579adcca9ed1',
@@ -359,7 +345,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 });
 
             parseResourceStub
@@ -370,7 +356,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'on',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     id: '5c088673fb2f579adcca9ed1',
@@ -378,6 +364,7 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'on',
+                    creationDate: date,
                 });
 
             return resourceBO.save({
@@ -385,14 +372,14 @@ describe('resourceBO', () => {
                 type: 'server',
                 data: {},
                 status: 'on',
-                creationDate: DateHelper.now(),
+                creationDate: date,
             })
                 .then((resource) => {
                     expect(resource.name).to.be.equal('resource-test');
                     expect(resource.type).to.be.equal('server');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('on');
-                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(saveStub.callCount).to.be.equals(1);
                     expect(parseResourceStub.callCount).to.be.equals(1);
                     expect(nowStub.callCount).to.be.equals(1);
@@ -405,7 +392,8 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'off',
-                    creationDate: DateHelper.now(),
+                    isEnabled: true,
+                    creationDate: date,
                 })
                 .returns({
                     _id: '5c088673fb2f579adcca9ed1',
@@ -414,7 +402,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'off',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 });
 
             parseResourceStub
@@ -425,7 +413,7 @@ describe('resourceBO', () => {
                     data: {},
                     status: 'off',
                     isEnabled: true,
-                    creationDate: DateHelper.now(),
+                    creationDate: date,
                 })
                 .returns({
                     id: '5c088673fb2f579adcca9ed1',
@@ -433,6 +421,7 @@ describe('resourceBO', () => {
                     type: 'server',
                     data: {},
                     status: 'off',
+                    creationDate: date,
                 });
 
             return resourceBO.save({
@@ -440,14 +429,14 @@ describe('resourceBO', () => {
                 type: 'server',
                 data: {},
                 status: 'off',
-                creationDate: DateHelper.now(),
+                creationDate: date,
             })
                 .then((resource) => {
                     expect(resource.name).to.be.equal('resource-test');
                     expect(resource.type).to.be.equal('server');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('off');
-                    expect(resource.creationDate).to.be.equal(DateHelper.now());
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(saveStub.callCount).to.be.equals(1);
                     expect(parseResourceStub.callCount).to.be.equals(1);
                     expect(nowStub.callCount).to.be.equals(1);
@@ -455,80 +444,92 @@ describe('resourceBO', () => {
         });
     });
 
-    describe('getById', function(){
-        it('should return error when body does not exist', function() {
-            var getByIdStub = sinon.stub(resourceDAO, 'getById');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
+    describe('getById', () => {
+        it('should return error when body does not exist', () => {
             return resourceBO.getById()
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(getByIdStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(getByIdStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getByIdStub.restore();
-                        parseUserStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(getByIdStub.callCount).to.be.equals(0);
+                    expect(getByIdStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('should return error when body does not contains the field id', function() {
-            var getByIdStub = sinon.stub(resourceDAO, 'getById');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
+        it('should return error when body does not contains the field id', () => {
             return resourceBO.getById({})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(getByIdStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getByIdStub.restore();
-                        parseUserStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(getByIdStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
-        it('should return error when id does not exist', function() {
-            var getByIdStub = sinon.stub(resourceDAO, 'getById');
+        it('should return error when id does not exist', () => {
             getByIdStub
                 .withArgs('5bbead798c2a8a92339e88b7')
                 .returns({});
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
 
-            return resourceBO.getById({id: '5bbead798c2a8a92339e88b7'})
-                    .then(function(resource){
-                        expect(resource).to.be.eqls({});
-                        expect(getByIdStub.callCount).to.be.equals(1);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getByIdStub.restore();
-                        parseUserStub.restore();
-                    });
+            return resourceBO.getById({ id: '5bbead798c2a8a92339e88b7' })
+                .then((resource) => {
+                    expect(resource).to.be.eqls({});
+                    expect(getByIdStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                    getByIdStub.restore();
+                });
         });
-        it('should return a resource when resourceId belongs to some resource', function() {
-            var getByIdStub = sinon.stub(resourceDAO, 'getById');
+        it('should return a resource when resourceId belongs to some resource', () => {
             getByIdStub
                 .withArgs('5bbead798c2a8a92339e88b8')
-                .returns({_id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com', isEnabled: true, creationDate: date});
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-            parseUserStub
-                .withArgs({_id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com', isEnabled: true, creationDate: date})
-                .returns({id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com'});
+                .returns({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                });
 
-            return resourceBO.getById({id: '5bbead798c2a8a92339e88b8'})
-                    .then(function(resource){
-                        expect(resource).to.be.eqls({id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com'});
-                        expect(getByIdStub.callCount).to.be.equals(1);
-                        expect(parseUserStub.callCount).to.be.equals(1);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        getByIdStub.restore();
-                        parseUserStub.restore();
-                    });
+            parseResourceStub
+                .withArgs({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                })
+                .returns({
+                    id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    creationDate: date,
+                });
+
+            return resourceBO.getById({ id: '5bbead798c2a8a92339e88b8' })
+                .then((resource) => {
+                    expect(resource.id).to.be.equal('5bbead798c2a8a92339e88b8');
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('off');
+                    expect(resource.creationDate).to.be.equal(date);
+                    expect(getByIdStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
     });
 
-    describe('update', function(){
+    describe('update', () => {
         it('Should return error when body does not exist', function(){
             var updateStub = sinon.stub(resourceDAO, 'update');
             var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
@@ -586,7 +587,7 @@ describe('resourceBO', () => {
         });
     });
 
-    describe('delete', function(){
+    describe('delete', () => {
         it('Should return error when body does not exist', function(){
             var deleteStub = sinon.stub(resourceDAO, 'delete');
 
