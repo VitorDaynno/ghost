@@ -29,13 +29,14 @@ describe('resourceBO', () => {
     let getAllStub;
     let saveStub;
     let getByIdStub;
+    let updateStub;
     let parseResourceStub;
-    
 
     beforeEach(() => {
         getAllStub = sinon.stub(resourceDAO, 'getAll');
         saveStub = sinon.stub(resourceDAO, 'save');
         getByIdStub = sinon.stub(resourceDAO, 'getById');
+        updateStub = sinon.stub(resourceDAO, 'update');
         parseResourceStub = sinon.stub(ModelHelper, 'parseResource');
 
         nowStub = sinon.stub(DateHelper, 'now');
@@ -50,6 +51,7 @@ describe('resourceBO', () => {
         parseResourceStub.restore();
         nowStub.restore();
         getByIdStub.restore();
+        updateStub.restore();
     });
 
     describe('save', () => {
@@ -530,76 +532,117 @@ describe('resourceBO', () => {
     });
 
     describe('update', () => {
-        it('Should return error when body does not exist', function(){
-            var updateStub = sinon.stub(resourceDAO, 'update');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
+        it('Should return error when body does not exist', () => {
             return resourceBO.update()
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(updateStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        updateStub.restore();
-                        parseUserStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(updateStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
 
-        it('Should return error when body does contains id', function(){
-            var updateStub = sinon.stub(resourceDAO, 'update');
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-
-            return resourceBO.update({name: 'tests'})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(updateStub.callCount).to.be.equals(0);
-                        expect(parseUserStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        updateStub.restore();
-                        parseUserStub.restore();
-                    });
+        it('Should return error when body does contains id', () => {
+            return resourceBO.update({ name: 'tests' })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(updateStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
         });
 
-        it('Should return a resource when updated with success', function(){
-            var updateStub = sinon.stub(resourceDAO, 'update');
+        it('Should return error when try update status of resource to invalid status', () => {
+            return resourceBO.update({ id: '5c088673fb2f579adcca9ed1', status: 'wrong' })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('status is invalid');
+                    expect(updateStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
+        });
+
+        it('Should return error when try update type of resource to invalid type', () => {
+            return resourceBO.update({ id: '5c088673fb2f579adcca9ed1', type: 'wrong' })
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('type is invalid');
+                    expect(updateStub.callCount).to.be.equals(0);
+                    expect(parseResourceStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                });
+        });
+
+
+        it('Should return a resource when updated with success', () => {
             updateStub
-                .withArgs('5c088673fb2f579adcca9ed1', {name: 'changeName', modificationDate: date})
-                .returns({_id: '5c088673fb2f579adcca9ed1', name: 'changeName', email: 'test@testemail.com', creationDate: date, modificationDate: date});
+                .withArgs('5c088673fb2f579adcca9ed1', { name: 'changeName', modificationDate: date })
+                .returns({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'changeName',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                    modificationDate: date,
+                });
 
-            var parseUserStub = sinon.stub(ModelHelper, 'parseUser');
-            parseUserStub
-                .withArgs({_id: '5c088673fb2f579adcca9ed1', name: 'changeName', email: 'test@testemail.com', creationDate: date, modificationDate: date})
-                .returns({id: '5c088673fb2f579adcca9ed1', name: 'changeName', email: 'test@testemail.com'});
+            parseResourceStub
+                .withArgs({
+                    _id: '5c088673fb2f579adcca9ed1',
+                    name: 'changeName',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                    modificationDate: date,
+                })
+                .returns({
+                    id: '5c088673fb2f579adcca9ed1',
+                    name: 'changeName',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    creationDate: date,
+                    modificationDate: date,
+                });
 
-            return resourceBO.update({id: '5c088673fb2f579adcca9ed1', name: 'changeName'})
-                    .then(function(resource) {
-                        expect(resource).to.be.eqls({id: '5c088673fb2f579adcca9ed1', name: 'changeName', email: 'test@testemail.com'});
-                        expect(updateStub.callCount).to.be.equals(1);
-                        expect(parseUserStub.callCount).to.be.equals(1);
-                        expect(nowStub.callCount).to.be.equals(1);
-                        updateStub.restore();
-                        parseUserStub.restore();
-                    });
+            return resourceBO.update({ id: '5c088673fb2f579adcca9ed1', name: 'changeName' })
+                .then((resource) => {
+                    expect(resource.id).to.be.equal('5c088673fb2f579adcca9ed1');
+                    expect(resource.name).to.be.equal('changeName');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eqls({});
+                    expect(resource.status).to.be.equal('off');
+                    expect(resource.creationDate).to.be.equal(date);
+                    expect(resource.modificationDate).to.be.equal(date);
+                    expect(updateStub.callCount).to.be.equals(1);
+                    expect(parseResourceStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                });
         });
     });
 
     describe('delete', () => {
-        it('Should return error when body does not exist', function(){
-            var deleteStub = sinon.stub(resourceDAO, 'delete');
-
+        it('Should return error when body does not exist', () => {
             return resourceBO.delete()
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(deleteStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        deleteStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(deleteStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                    deleteStub.restore();
+                });
         });
 
         it('Should return error when body does contains id', function(){

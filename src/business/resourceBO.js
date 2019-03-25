@@ -120,10 +120,33 @@ class ResourceBO {
                 .then(() => {
                     logger.info('[ResourceBO] Updating resource: ', body.id);
                     const resource = {};
-                    if (body.name || body.name !== '') {
+                    if (body.name && body.name !== '') {
                         resource.name = body.name;
                         resource.modificationDate = this.dateHelper.now();
                     }
+                    if (body.type && body.type !== '') {
+                        if (!['database', 'server', 'service'].includes(body.type)) {
+                            logger.error(`[ResourceBO] Type not valid in: ${JSON.stringify(body)}`);
+                            const error = { code: 422, message: 'type is invalid' };
+                            throw error;
+                        }
+                        resource.type = body.type;
+                        resource.modificationDate = this.dateHelper.now();
+                    }
+                    if (body.data && body.data !== '') {
+                        resource.data = body.data;
+                        resource.modificationDate = this.dateHelper.now();
+                    }
+                    if (body.status && body.status !== '') {
+                        if (!['on', 'off'].includes(body.status)) {
+                            logger.error(`[ResourceBO] Status not valid in: ${JSON.stringify(body)}`);
+                            const error = { code: 422, message: 'status is invalid' };
+                            throw error;
+                        }
+                        resource.status = body.status;
+                        resource.modificationDate = this.dateHelper.now();
+                    }
+
                     return this.dao.update(body.id, resource);
                 })
                 .then((resource) => {
