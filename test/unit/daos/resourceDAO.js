@@ -252,139 +252,171 @@ describe('resourceDAO', () => {
         });
     });
 
-    describe('getAll', function(){
-        it('Should return empty object when email dont exist', function(){
-            var findStub = sinon.mock(resourceModel).expects('find')
-                .withArgs({email:'email@test.com', password:'123', creationDate: DateHelper.now()})
+    describe('getAll', () => {
+        it('Should return empty object when name dont exist', () => {
+            const findStub = sinon.mock(resourceModel).expects('find')
+                .withArgs({ name: 'resource' })
                 .chain('exec')
                 .resolves({});
 
-            return resourceDAO.getAll({email:'email@test.com', password:'123', creationDate: DateHelper.now()})
-                .then(function(){
+            return resourceDAO.getAll({ name: 'resource' })
+                .then(() => {
                     expect(findStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return empty object when password dont exist', function(){
-            var findStub = sinon.mock(resourceModel).expects('find')
-                .withArgs({email:'test@test.com', password:'1234', creationDate: DateHelper.now()})
+        it('Should return a resource when credentials exist', () => {
+            const findStub = sinon.mock(resourceModel).expects('find')
+                .withArgs({ name: 'resource-test' })
                 .chain('exec')
-                .resolves({});
-
-            return resourceDAO.getAll({email:'test@test.com', password:'1234', creationDate: DateHelper.now()})
-                .then(function(){
-                    expect(findStub.callCount).to.be.equals(1);
-                    sinon.restore();
+                .resolves({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
                 });
-        });
 
-        it('Should return a resource when credentials exist', function(){
-            var findStub = sinon.mock(resourceModel).expects('find')
-                .withArgs({email:'test@test.com', password:'123', creationDate: DateHelper.now()})
-                .chain('exec')
-                .resolves({name: 'test', email: 'test@test.com'});
-
-            return resourceDAO.getAll({email:'test@test.com', password:'123', creationDate: DateHelper.now()})
-                .then(function(resource){
-                    expect(resource.name).to.be.equals('test');
-                    expect(resource.email).to.be.equals('test@test.com');
+            return resourceDAO.getAll({ name: 'resource-test' })
+                .then((resource) => {
+                    expect(resource._id).to.be.equal('5bbead798c2a8a92339e88b8');
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('off');
+                    expect(resource.isEnabled).to.be.equal(true);
+                    expect(resource.creationDate).to.be.equal(date);
                     expect(findStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
     });
 
-    describe('getById', function(){
-        it('Should return empty object when id dont exist', function(){
-            var findByStub = sinon.mock(resourceModel).expects('findById')
+    describe('getById', () => {
+        it('Should return empty object when id dont exist', () => {
+            const findByStub = sinon.mock(resourceModel).expects('findById')
                 .withArgs('5bbead798c2a8a92339e88b7')
                 .chain('exec')
                 .resolves({});
 
             return resourceDAO.getById('5bbead798c2a8a92339e88b7')
-                .then(function(){
+                .then(() => {
                     expect(findByStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
 
-        it('Should return a resource when id exist', function(){
-            var findByStub = sinon.mock(resourceModel).expects('findById')
+        it('Should return a resource when id exist', () => {
+            const findByStub = sinon.mock(resourceModel).expects('findById')
                 .withArgs('5bbead798c2a8a92339e88b8')
                 .chain('exec')
-                .resolves({_id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com', creationDate: date});
+                .resolves({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                });
 
             return resourceDAO.getById('5bbead798c2a8a92339e88b8')
-                .then(function(resource){
-                    expect(resource).to.be.eqls({_id: '5bbead798c2a8a92339e88b8', name: 'test', email: 'test@mailtest.com', creationDate: date});
+                .then((resource) => {
+                    expect(resource._id).to.be.equal('5bbead798c2a8a92339e88b8');
+                    expect(resource.name).to.be.equal('resource-test');
+                    expect(resource.type).to.be.equal('server');
+                    expect(resource.data).to.be.eql({});
+                    expect(resource.status).to.be.equal('off');
+                    expect(resource.isEnabled).to.be.equal(true);
                     expect(findByStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
     });
 
-    describe('update', function(){
-        it('Should return error because id is empty', function(){
-            var updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
+    describe('update', () => {
+        it('Should return error because id is empty', () => {
+            const updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
                 .withArgs({})
                 .rejects();
 
             return resourceDAO.update('', {})
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(updateStub.callCount).to.be.equals(0);
                     sinon.restore();
                 });
         });
 
-        it('Should return error because body is empty', function(){
-            var updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
+        it('Should return error because body is empty', () => {
+            const updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
                 .withArgs({})
                 .rejects();
 
             return resourceDAO.update('5c088673fb2f579adcca9ed1', {})
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(updateStub.callCount).to.be.equals(0);
                     sinon.restore();
                 });
         });
 
-        it('Should return a resource when updated', function(){
-            var updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
-                .withArgs('5c088673fb2f579adcca9ed1', {$set: {name: 'changedName', modificationDate: DateHelper.now()}}, {new: true})
-                .resolves({_id: '5c088673fb2f579adcca9ed1', name: 'changedName', email: 'test@mailtest.com', creationDate: DateHelper.now(), modificationDate: DateHelper.now()});
+        it('Should return a resource when updated', () => {
+            const updateStub = sinon.mock(resourceModel).expects('findByIdAndUpdate')
+                .withArgs('5c088673fb2f579adcca9ed1', { $set: { name: 'test', modificationDate: DateHelper.now() } }, { new: true })
+                .resolves({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                    modificationDate: DateHelper.now(),
+                });
 
-            return resourceDAO.update('5c088673fb2f579adcca9ed1', {name: 'changedName', modificationDate: DateHelper.now()})
-                .then(function(){
+            return resourceDAO.update('5c088673fb2f579adcca9ed1', { name: 'test', modificationDate: DateHelper.now() })
+                .then(() => {
                     expect(updateStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
         });
     });
 
-    describe('delete', function(){
-        it('Should return error because id is empty', function(){
-            var updateStub = sinon.mock(resourceModel).expects('update')
+    describe('delete', () => {
+        it('Should return error because id is empty', () => {
+            const updateStub = sinon.mock(resourceModel).expects('update')
                 .withArgs({})
                 .rejects();
 
             return resourceDAO.delete()
                 .then()
-                .catch(function(){
+                .catch(() => {
                     expect(updateStub.callCount).to.be.equals(0);
                     sinon.restore();
                 });
         });
 
-        it('Should delete a resource when id is correct', function(){
-            var updateStub = sinon.mock(resourceModel).expects('update')
-                .withArgs({_id: '5c088673fb2f579adcca9ed1'}, {isEnabled: false, exclusionDate: DateHelper.now()})
-                .resolves({_id: '5c088673fb2f579adcca9ed1', name: 'test', email: 'test@mailtest.com', isEnabled: false, creationDate: DateHelper.now(), exclusionDate: DateHelper.now()});
+        it('Should delete a resource when id is correct', () => {
+            const updateStub = sinon.mock(resourceModel).expects('update')
+                .withArgs({ _id: '5c088673fb2f579adcca9ed1' }, { isEnabled: false, exclusionDate: DateHelper.now() })
+                .resolves({
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                    modificationDate: DateHelper.now(),
+                    exclusionDate: DateHelper.now()
+                });
 
-            return resourceDAO.delete('5c088673fb2f579adcca9ed1', {isEnabled: false, exclusionDate: DateHelper.now()})
-                .then(function(){
+            return resourceDAO.delete('5c088673fb2f579adcca9ed1', { isEnabled: false, exclusionDate: DateHelper.now() })
+                .then(() => {
                     expect(updateStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
