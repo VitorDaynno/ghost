@@ -55,7 +55,7 @@ describe('resourceDAO', () => {
                     type: 'database',
                     data: {},
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -63,7 +63,7 @@ describe('resourceDAO', () => {
                 type: 'database',
                 data: {},
                 status: 'on',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -78,7 +78,7 @@ describe('resourceDAO', () => {
                     name: 'resource-test',
                     data: {},
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -86,7 +86,7 @@ describe('resourceDAO', () => {
                 name: 'resource-test',
                 data: {},
                 status: 'on',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -101,7 +101,7 @@ describe('resourceDAO', () => {
                     name: 'resource-test',
                     type: 'database',
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -109,7 +109,7 @@ describe('resourceDAO', () => {
                 name: 'resource-test',
                 type: 'database',
                 status: 'on',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -124,7 +124,7 @@ describe('resourceDAO', () => {
                     name: 'resource-test',
                     type: 'database',
                     data: {},
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -132,7 +132,7 @@ describe('resourceDAO', () => {
                 name: 'resource-test',
                 type: 'database',
                 data: {},
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -171,7 +171,7 @@ describe('resourceDAO', () => {
                     type: 'wrong type',
                     data: {},
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -180,7 +180,7 @@ describe('resourceDAO', () => {
                 type: 'wrong type',
                 data: {},
                 status: 'on',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -196,7 +196,7 @@ describe('resourceDAO', () => {
                     type: 'database',
                     data: {},
                     status: 'crashed',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .rejects();
 
@@ -205,7 +205,7 @@ describe('resourceDAO', () => {
                 type: 'database',
                 data: {},
                 status: 'crashed',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then()
                 .catch(() => {
@@ -221,7 +221,7 @@ describe('resourceDAO', () => {
                     type: 'database',
                     data: {},
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 })
                 .resolves({
                     _id: '5c05e59193a46d0d7464bdde',
@@ -229,7 +229,7 @@ describe('resourceDAO', () => {
                     type: 'database',
                     data: {},
                     status: 'on',
-                    creationDate: nowStub.now(),
+                    creationDate: nowStub,
                 });
 
             return resourceDAO.save({
@@ -237,7 +237,7 @@ describe('resourceDAO', () => {
                 type: 'database',
                 data: {},
                 status: 'on',
-                creationDate: nowStub.now(),
+                creationDate: nowStub,
             })
                 .then((resource) => {
                     expect(resource._id).to.be.equal('5c05e59193a46d0d7464bdde');
@@ -245,7 +245,7 @@ describe('resourceDAO', () => {
                     expect(resource.type).to.be.equal('database');
                     expect(resource.data).to.be.eql({});
                     expect(resource.status).to.be.equal('on');
-                    expect(resource.creationDate).to.be.equal(nowStub.now());
+                    expect(resource.creationDate).to.be.equal(nowStub);
                     expect(createStub.callCount).to.be.equals(1);
                     sinon.restore();
                 });
