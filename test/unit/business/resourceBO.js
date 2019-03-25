@@ -31,6 +31,7 @@ describe('resourceBO', () => {
     let getByIdStub;
     let updateStub;
     let parseResourceStub;
+    let deleteStub;
 
     beforeEach(() => {
         getAllStub = sinon.stub(resourceDAO, 'getAll');
@@ -38,6 +39,7 @@ describe('resourceBO', () => {
         getByIdStub = sinon.stub(resourceDAO, 'getById');
         updateStub = sinon.stub(resourceDAO, 'update');
         parseResourceStub = sinon.stub(ModelHelper, 'parseResource');
+        deleteStub = sinon.stub(resourceDAO, 'delete');
 
         nowStub = sinon.stub(DateHelper, 'now');
         date = new Date();
@@ -52,6 +54,7 @@ describe('resourceBO', () => {
         nowStub.restore();
         getByIdStub.restore();
         updateStub.restore();
+        deleteStub.restore();
     });
 
     describe('save', () => {
@@ -645,32 +648,29 @@ describe('resourceBO', () => {
                 });
         });
 
-        it('Should return error when body does contains id', function(){
-            var deleteStub = sinon.stub(resourceDAO, 'delete');
-
+        it('Should return error when body does contains id', () => {
             return resourceBO.delete({})
-                    .then()
-                    .catch(function(error) {
-                        expect(error.code).to.be.equals(422);
-                        expect(error.message).to.be.equals('Id are required');
-                        expect(deleteStub.callCount).to.be.equals(0);
-                        expect(nowStub.callCount).to.be.equals(0);
-                        deleteStub.restore();
-                    });
+                .then()
+                .catch((error) => {
+                    expect(error.code).to.be.equals(422);
+                    expect(error.message).to.be.equals('Id are required');
+                    expect(deleteStub.callCount).to.be.equals(0);
+                    expect(nowStub.callCount).to.be.equals(0);
+                    deleteStub.restore();
+                });
         });
 
-        it('Should delete a resource', function(){
-            var deleteStub = sinon.stub(resourceDAO, 'delete');
+        it('Should delete a resource', () => {
             deleteStub
-                .withArgs({id: '5c088673fb2f579adcca9ed1'},{isEnabled: false, exclusionDate: date})
+                .withArgs({ id: '5c088673fb2f579adcca9ed1' }, { isEnabled: false, exclusionDate: date })
                 .returns({});
 
-            return resourceBO.delete({id: '5c088673fb2f579adcca9ed1'})
-                    .then(function() {
-                        expect(deleteStub.callCount).to.be.equals(1);
-                        expect(nowStub.callCount).to.be.equals(1);
-                        deleteStub.restore();
-                    });
+            return resourceBO.delete({ id: '5c088673fb2f579adcca9ed1' })
+                .then(() => {
+                    expect(deleteStub.callCount).to.be.equals(1);
+                    expect(nowStub.callCount).to.be.equals(1);
+                    deleteStub.restore();
+                });
         });
     });
 });
