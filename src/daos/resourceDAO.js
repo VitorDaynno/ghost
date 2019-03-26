@@ -28,7 +28,7 @@ class ResourceDAO {
             this.resourceModel.find(filter)
                 .exec()
                 .then((user) => {
-                    logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(user)}s`);
+                    logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(user)}`);
                     resolve(user);
                 });
         });

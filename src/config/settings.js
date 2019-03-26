@@ -2,7 +2,7 @@ const util = require('util');
 
 module.exports = {
     mongoUrl: util.format('mongodb://%s/ghost', process.env.DB || 'localhost'),
-    servicePort: process.env.PORT || 5000,
+    servicePort: process.env.PORT || 5001,
     isMongoDebug: true,
     jwt: {
         secret: process.env.SECRET || 'secret-key',
