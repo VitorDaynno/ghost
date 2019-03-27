@@ -1,27 +1,53 @@
 const chai = require('chai');
-const expect = chai.expect;
 const sinon = require('sinon');
-const userModel = require('../../../src/models/user')();
-const sinonMongoose = require('sinon-mongoose');
+const mocha = require('mocha');
+const ResourceDAO = require('../../../src/daos/resourceDAO');
+const resourceModel = require('../../../src/models/resource')();
+const runner = require('../../../src/runner');
 
-describe('Runner', function(){
-    const date = new Date();
+require('sinon-mongoose');
 
-    describe('monitoring', function(){
-        it('Should return status on and update the resource', function(){});
-        it('Should return status off and update the resource', function(){});
-        it('Should return status off and do not update the resource', function(){});
-        it('Should return status on and do not update the resource', function(){});
-        it('Should do nothing when there is not a resource', function(){});
+const { expect } = chai;
+const {
+    describe,
+    it,
+    beforeEach,
+    afterEach,
+} = mocha;
+
+describe('Runner', () => {
+    const resourceDAO = new ResourceDAO({
+        resource: resourceModel,
+    });
+    let getAllStub;
+    let serverMonitoringStub;
+
+    beforeEach(() => {
+        getAllStub = sinon.stub(resourceDAO, 'getAll');
+        serverMonitoringStub = sinon.stub(runner, 'serverMonitoring');
     });
 
-    describe('serverMonitoring', function(){
-        it('Should return error because while pinging a invalid server', function(){});
-        it('Should return status on ', function(){});
-        it('Should return status off', function(){});
-        it('Should return diferent status from the resource to be updated - on', function(){});
-        it('Should return diferent status from the resource to be updated - off', function(){});
-        it('Should do nothing when there is a empty resource', function(){});
+    afterEach(() => {
+        getAllStub.restore();
+        serverMonitoringStub.restore();
+    });
+
+    describe('monitoring', () => {
+        it('Should return status on and update the resource', () => {
+        });
+        it('Should return status off and update the resource', () => {});
+        it('Should return status off and do not update the resource', () => {});
+        it('Should return status on and do not update the resource', () => {});
+        it('Should do nothing when there is not a resource', () => {});
+    });
+
+    describe('serverMonitoring', () => {
+        it('Should return error because while pinging a invalid server', () => {});
+        it('Should return status on ', () => {});
+        it('Should return status off', () => {});
+        it('Should return diferent status from the resource to be updated - on', () => {});
+        it('Should return diferent status from the resource to be updated - off', () => {});
+        it('Should do nothing when there is a empty resource', () => {});
     });
 
 });
