@@ -28,7 +28,7 @@ class ResourceBO {
                         logger.error(`[ResourceBO] Resource not found by id: ${body.id}`);
                         return {};
                     }
-                    logger.info('[ResourceBO] Parse resource: ', resource);
+                    logger.info('[ResourceBO] Parse resource: ', resource._doc);
                     return this.modelHelper.parseResource(resource);
                 })
                 .then((resource) => {

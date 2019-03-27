@@ -15,7 +15,7 @@ class ResourceDAO {
                     resolve(newResource);
                 })
                 .catch((error) => {
-                    logger.error(`[UserDAO] A error occurred: ${error}`);
+                    logger.error(`[ResourceDAO] A error occurred: ${error}`);
                     reject(error);
                 });
         });
@@ -27,9 +27,9 @@ class ResourceDAO {
             logger.info(`[ResourceDAO] Finding resource by filter ${JSON.stringify(filter)}`);
             this.resourceModel.find(filter)
                 .exec()
-                .then((user) => {
-                    logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(user)}`);
-                    resolve(user);
+                .then((resource) => {
+                    logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(resource)}`);
+                    resolve(resource);
                 });
         });
     }
@@ -37,17 +37,17 @@ class ResourceDAO {
     getById(id) {
         this.id = id;
         return new Promise((resolve, reject) => {
-            logger.info(`[ResourceDAO] Finding user by id ${JSON.stringify(id)}`);
+            logger.info(`[ResourceDAO] Finding resource by id ${JSON.stringify(id)}`);
             this.resourceModel.findById(id)
                 .exec()
-                .then((user) => {
-                    logger.info(`[ResourceDAO] A user returned: ${JSON.stringify(user)}`);
-                    resolve(user);
+                .then((resource) => {
+                    logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(resource)}`);
+                    resolve(resource);
                 })
                 .catch((error) => {
                     logger.error(`[ResourceDAO] An error occurred: ${error}`);
                     if (error.name === 'CastError' || error.name === 'ValidatorError') {
-                        reject(Error({ code: 422, message: error.message }));
+                        reject({ code: 422, message: error.message });
                     } else {
                         reject({code: 500, message: error.message});
                     }
@@ -59,18 +59,20 @@ class ResourceDAO {
         this.id = id;
         this.resource = resource;
         return new Promise((resolve, reject) => {
-            logger.info(`[ResourceDAO] Updating user by id ${id}`);
+            logger.info(`[ResourceDAO] Updating resource by id ${id}`);
             if (!id || id === '') {
                 logger.error('[ResourceDAO] Id is empty');
-                reject();
+                const error = { code: 422, message: 'Id is empty' };
+                throw error;
             }
             if (Object.keys(resource).length === 0) {
-                logger.error('[ResourceDAO] user is empty');
-                reject();
+                logger.error('[ResourceDAO] Resource is empty');
+                const error = { code: 422, message: 'Resource is empty' };
+                throw error;
             }
             this.resourceModel.findByIdAndUpdate(id, { $set: resource }, { new: true })
                 .then((updatedResource) => {
-                    logger.info(`[ResourceDAO] User updated by id ${id}`);
+                    logger.info(`[ResourceDAO] Resource updated by id ${id}`);
                     resolve(updatedResource);
                 })
                 .catch((error) => {
@@ -94,9 +96,9 @@ class ResourceDAO {
                 reject();
             }
             this.resourceModel.update({ _id: id }, resource)
-                .then((user) => {
-                    logger.info(`[ResourceDAO] User deleted by id ${id}`);
-                    resolve(user);
+                .then((resource) => {
+                    logger.info(`[ResourceDAO] Resource deleted by id ${id}`);
+                    resolve(resource);
                 })
                 .catch((error) => {
                     logger.error('[ResourceDAO] An error occurred: ', error);

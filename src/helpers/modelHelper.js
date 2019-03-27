@@ -17,7 +17,10 @@ module.exports = {
         entity.data = resource.data;
         entity.status = resource.status;
         entity.creationDate = resource.creationDate;
-        entity.modificationDate = resource.modificationDate;
+
+        if (resource.modificationDate) {
+            entity.modificationDate = resource.modificationDate;
+        }
 
         return entity;
     },
