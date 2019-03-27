@@ -51,7 +51,7 @@ const runner = {
                     }
                     return Promise.all(p);
                 })
-                .then((responses) => {
+                .then((responses) => { 
                     logger.info(`[Runner] The resources responses returned are <${JSON.stringify(responses)}>`);
                     let p = [];
                     for (let i = 0; i < responses.length; i += 1) {
