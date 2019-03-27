@@ -8,7 +8,7 @@ const runner = {
 
             chain
                 .then(() => {
-                    logger.info('[Runner] The server Monitoring has started.');
+                    logger.info('[Runner] The method serverMonitoring has started.');                    
                     return ping.promise.probe(resource.data.ip);
                 })
                 .then((response) => {
@@ -31,12 +31,13 @@ const runner = {
          * 1- Change to use a BO function to search the resource
          * 2- Starting to execute in a loop of 60 seconds
          */
+        logger.info('[Runner] The server Monitoring has started.');
         return new Promise((resolve, reject) => {
             const resourceDAO = FatoryDAO.getDAO('resource');
-            
+            let allResources = [];
             const filter = {
                 type: 'server',
-                isOnline: true,
+                isEnabled: true,
             };
             
             resourceDAO.getAll(filter)
@@ -45,6 +46,7 @@ const runner = {
                     let p = [];
                     for (let i = 0; i < resources.length; i += 1) {
                         let resource = resources[i];
+                        allResources.push(resource)
                         p.push(this.serverMonitoring(resource));
                     }
                     return Promise.all(p);
@@ -56,6 +58,9 @@ const runner = {
                         let response = responses[i];
                         if (response) {
                             p.push(resourceDAO.update(response.id, response));
+                        } else {
+                            let actualResource = allResources[i];
+                            logger.info(`[Runner] The resource ${actualResource.name} status is already updated`)
                         }
                     }
                     return Promise.all(p);
@@ -66,6 +71,15 @@ const runner = {
                     reject(err);
                 });
         })
+    },
+
+    continuousMonitoring(seconds) {
+        if(seconds) {
+            logger.info(`[Runner] Starting continuous monitoring every ${JSON.stringify(seconds)} seconds`);            
+            setInterval(() => {
+                this.monitoring();
+            }, 1000 * seconds);
+        }
     },
 
 };
