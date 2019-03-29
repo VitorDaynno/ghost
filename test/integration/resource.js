@@ -384,4 +384,43 @@ describe('resources', () => {
                 .expect(200);
         });
     });
+
+    describe('v1/resources', () =>  {
+        it('Should return error because request not contain token auth', () => {
+            return request(server)
+                .get('/v1/resources')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(403);
+        });
+        it('Should return error because request contain a token invalid', () => {
+            return request(server)
+                .get('/v1/resources')
+                .set('Accept', 'application/json')
+                .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdCIsImlkIjoiMTEyIiwiaWF0IjoxNTE2MjM5MDIyfQ.RJBEFPnHm-t8-aMeHNkC7n9RocfTOHyKVCBWU2ogOTs')
+                .expect('Content-Type', /json/)
+                .expect(403);
+        });
+
+        it('Should return a valid token to continue the validates', () => {
+            return request(server)
+                .post('/v1/users/auth')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .send({ email: 'admin@ghost.com.br', password: '1234' })
+                .expect(200)
+                .then((response) => {
+                    validToken = response.body.token;
+                });
+        });
+
+        it('Should return transactions belonging to the user', () => {
+            return request(server)
+                .get('/v1/resources')
+                .set('Accept', 'application/json')
+                .set('Authorization', `Bearer ${validToken}`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
+    });
 });

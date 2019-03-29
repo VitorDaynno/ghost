@@ -196,6 +196,27 @@ class ResourceBO {
                 });
         });
     }
+
+    getAll(body) {
+        this.body = body;
+        return new Promise((resolve, reject) => {
+            const chain = Promise.resolve();
+            chain
+                .then(() => {
+                    logger.info('[ResourceBO] Getting resources by userId');
+                    const filter = {};
+                    return this.dao.getAll(filter);
+                })
+                .then((resources) => {
+                    logger.info(`[ResourcesBO] The resources returned: ${JSON.stringify(resources)}`);
+                    resolve(resources);
+                })
+                .catch((error) => {
+                    logger.error('[ResourcesBO] An error occurred: ', error);
+                    reject(error);
+                });
+        });
+    }
 }
 
 module.exports = ResourceBO;

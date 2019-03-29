@@ -23,9 +23,10 @@ class ResourceDAO {
 
     getAll(filter) {
         this.filter = filter;
+        this.filter.isEnabled = true;
         return new Promise((resolve) => {
             logger.info(`[ResourceDAO] Finding resource by filter ${JSON.stringify(filter)}`);
-            this.resourceModel.find(filter)
+            this.resourceModel.find(this.filter)
                 .exec()
                 .then((resource) => {
                     logger.info(`[ResourceDAO] A resource returned: ${JSON.stringify(resource)}`);

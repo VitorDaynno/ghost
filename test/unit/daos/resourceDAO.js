@@ -255,7 +255,7 @@ describe('resourceDAO', () => {
     describe('getAll', () => {
         it('Should return empty object when name dont exist', () => {
             const findStub = sinon.mock(resourceModel).expects('find')
-                .withArgs({ name: 'resource' })
+                .withArgs({ name: 'resource', isEnabled: true })
                 .chain('exec')
                 .resolves({});
 
@@ -268,7 +268,7 @@ describe('resourceDAO', () => {
 
         it('Should return a resource when credentials exist', () => {
             const findStub = sinon.mock(resourceModel).expects('find')
-                .withArgs({ name: 'resource-test' })
+                .withArgs({ name: 'resource-test', isEnabled: true })
                 .chain('exec')
                 .resolves({
                     _id: '5bbead798c2a8a92339e88b8',

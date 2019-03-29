@@ -673,4 +673,53 @@ describe('resourceBO', () => {
                 });
         });
     });
+
+    describe('getAll', () => {
+        it('Should return zero resources by valid user', () => {
+            getAllStub
+                .withArgs({})
+                .returns([]);
+
+            return resourceBO.getAll()
+                .then((resources) => {
+                    expect(resources.length).to.be.equal(0);
+                    expect(getAllStub.callCount).to.be.equal(1);
+                });
+        });
+        it('Should return a transactions by valid user', () => {
+            getAllStub
+                .withArgs({})
+                .returns([{
+                    _id: '5bbead798c2a8a92339e88b8',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                }, {
+                    _id: '5bbead798c2a8a92339e88b9',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                }, {
+                    _id: '5bbead798c2a8a92339e88b1',
+                    name: 'resource-test',
+                    type: 'server',
+                    data: {},
+                    status: 'off',
+                    isEnabled: true,
+                    creationDate: date,
+                }]);
+
+            return resourceBO.getAll()
+                .then((resources) => {
+                    expect(resources.length).to.be.equals(3);
+                    expect(getAllStub.callCount).to.be.equals(1);
+                });
+        });
+    })
 });

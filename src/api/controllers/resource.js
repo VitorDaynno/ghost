@@ -54,5 +54,16 @@ module.exports = () => {
                     res.status(error.code).json(error.message);
                 });
         },
+
+        getAll(req, res) {
+            logger.info('[Resource-Controller] Getting resources');
+            business.getAll()
+                .then((resources) => {
+                    res.status(200).send(resources);
+                })
+                .catch((error) => {
+                    res.status(error.code).json(error.message);
+                });
+        },
     };
 };
