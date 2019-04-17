@@ -5,7 +5,7 @@ module.exports = (app) => {
     const helper = new Helper();
 
     app.route('/v1/resources')
-        .get(helper.verifyToken, controller.getAll)
+        .get(controller.getAll)
         .post(helper.verifyToken, controller.save);
 
     app.route('/v1/resources/:id')
