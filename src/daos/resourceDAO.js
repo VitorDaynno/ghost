@@ -58,8 +58,8 @@ class ResourceDAO {
 
     update(id, resource) {
         this.id = id;
+        resource.modificationDate = new Date();
         this.resource = resource;
-        this.resource.modificationDate = new Date();
         return new Promise((resolve, reject) => {
             logger.info(`[ResourceDAO] Updating resource by id ${id}`);
             if (!id || id === '') {
