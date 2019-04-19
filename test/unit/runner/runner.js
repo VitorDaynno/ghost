@@ -21,6 +21,7 @@ describe('Runner', () => {
     });
     let getAllStub;
     let serverMonitoringStub;
+    let requestStub;
 
     beforeEach(() => {
         getAllStub = sinon.stub(resourceDAO, 'getAll');
@@ -50,4 +51,23 @@ describe('Runner', () => {
         it('Should do nothing when there is a empty resource', () => {});
     });
 
+    describe('serviceMonitoring', () => {
+        it('Should return status on', () => {
+            return runner.serviceMonitoring(resource)
+                .then((response) => {
+                    expect(response.status).to.be.equal('on');
+                    expect(requestStub.callCount).to.be.equal(1);
+                });
+        });
+        it('Should return status off', () => {
+            return runner.serviceMonitoring(resource)
+                .then((response) => {
+                    expect(response.status).to.be.equal('off');
+                    expect(requestStub.callCount).to.be.equal(1);
+                });
+        });
+        it('Should return diferent status from the resource to be updated - on', () => {});
+        it('Should return diferent status from the resource to be updated - off', () => {});
+        it('Should do nothing when there is a empty resource', () => {});
+    });
 });
