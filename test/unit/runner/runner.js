@@ -53,6 +53,15 @@ describe('Runner', () => {
 
     describe('serviceMonitoring', () => {
         it('Should return status on', () => {
+            const resource = {
+                _id: '5bbead798c2a8a92339e88b8',
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'off',
+                isEnabled: true,
+                creationDate: Date(),
+            };
             return runner.serviceMonitoring(resource)
                 .then((response) => {
                     expect(response.status).to.be.equal('on');
@@ -60,14 +69,52 @@ describe('Runner', () => {
                 });
         });
         it('Should return status off', () => {
+            const resource = {
+                _id: '5bbead798c2a8a92339e88b8',
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'off',
+                isEnabled: true,
+                creationDate: Date(),
+            };
             return runner.serviceMonitoring(resource)
                 .then((response) => {
                     expect(response.status).to.be.equal('off');
                     expect(requestStub.callCount).to.be.equal(1);
                 });
         });
-        it('Should return diferent status from the resource to be updated - on', () => {});
-        it('Should return diferent status from the resource to be updated - off', () => {});
-        it('Should do nothing when there is a empty resource', () => {});
+        it('Should return diferent status from the resource to be updated - on', () => {
+            const resource = {
+                _id: '5bbead798c2a8a92339e88b8',
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'off',
+                isEnabled: true,
+                creationDate: Date(),
+            };
+            return runner.serviceMonitoring(resource)
+                .then((response) => {
+                    expect(response.status).to.be.equal('on');
+                    expect(requestStub.callCount).to.be.equal(1);
+                });
+        });
+        it('Should return diferent status from the resource to be updated - off', () => {
+            const resource = {
+                _id: '5bbead798c2a8a92339e88b8',
+                name: 'resource-test',
+                type: 'server',
+                data: {},
+                status: 'off',
+                isEnabled: true,
+                creationDate: Date(),
+            };
+            return runner.serviceMonitoring(resource)
+                .then((response) => {
+                    expect(response.status).to.be.equal('off');
+                    expect(requestStub.callCount).to.be.equal(1);
+                });
+        });
     });
 });

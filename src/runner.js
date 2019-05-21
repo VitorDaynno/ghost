@@ -1,6 +1,7 @@
 const ping = require('ping');
 const logger = require('./config/logger')();
 const FatoryDAO = require('./factories/factoryDAO');
+
 const runner = {
     serverMonitoring(resource) {
         return new Promise((resolve, reject) => {
@@ -23,6 +24,17 @@ const runner = {
                 })
                 .then(resolve)
                 .catch(reject);
+        });
+    },
+
+    serviceMonitoring(resource) {
+        return new Promise((resolve, reject) => {
+            const chain = Promise.resolve();
+
+            chain
+                .then(() => {
+                    logger.info('[Runner] The method serviceMonitoring has started.');
+                });
         });
     },
 
