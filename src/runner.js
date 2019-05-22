@@ -34,8 +34,23 @@ const runner = {
             chain
                 .then(() => {
                     logger.info('[Runner] The method serviceMonitoring has started.');
-                });
+                    return this.requestService(resource);
+                })
+                .then((status) => {
+                    logger.info(`[Runner] The resource <${JSON.stringify(resource)}> response is <${JSON.stringify(status)}>`);
+                    if (resource.status !== status) {
+                        resource.status = status;
+                        return resource;
+                    }
+                    return null;
+                })
+                .then(resolve)
+                .catch(reject);
         });
+    },
+
+    requestService() {
+
     },
 
     monitoring() {

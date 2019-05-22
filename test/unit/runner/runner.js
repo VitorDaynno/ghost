@@ -26,11 +26,13 @@ describe('Runner', () => {
     beforeEach(() => {
         getAllStub = sinon.stub(resourceDAO, 'getAll');
         serverMonitoringStub = sinon.stub(runner, 'serverMonitoring');
+        requestStub = sinon.stub(runner, 'requestService');
     });
 
     afterEach(() => {
         getAllStub.restore();
         serverMonitoringStub.restore();
+        requestStub.restore();
     });
 
     describe('monitoring', () => {
@@ -52,23 +54,28 @@ describe('Runner', () => {
     });
 
     describe('serviceMonitoring', () => {
-        it('Should return status on', () => {
+        it('Should return null with same status (on)', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
                 type: 'server',
                 data: {},
-                status: 'off',
+                status: 'on',
                 isEnabled: true,
                 creationDate: Date(),
             };
+
+            requestStub
+                .withArgs(resource)
+                .resolves('on');
+
             return runner.serviceMonitoring(resource)
                 .then((response) => {
-                    expect(response.status).to.be.equal('on');
+                    expect(response).to.be.equal(null);
                     expect(requestStub.callCount).to.be.equal(1);
                 });
         });
-        it('Should return status off', () => {
+        it('Should return null with same status (off)', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
@@ -78,9 +85,14 @@ describe('Runner', () => {
                 isEnabled: true,
                 creationDate: Date(),
             };
+
+            requestStub
+                .withArgs(resource)
+                .resolves('off');
+
             return runner.serviceMonitoring(resource)
                 .then((response) => {
-                    expect(response.status).to.be.equal('off');
+                    expect(response).to.be.equal(null);
                     expect(requestStub.callCount).to.be.equal(1);
                 });
         });
@@ -94,9 +106,22 @@ describe('Runner', () => {
                 isEnabled: true,
                 creationDate: Date(),
             };
+
+            requestStub
+                .withArgs(resource)
+                .resolves('on');
+
             return runner.serviceMonitoring(resource)
                 .then((response) => {
-                    expect(response.status).to.be.equal('on');
+                    expect(response).to.be.eql({
+                        _id: '5bbead798c2a8a92339e88b8',
+                        name: 'resource-test',
+                        type: 'server',
+                        data: {},
+                        status: 'on',
+                        isEnabled: true,
+                        creationDate: Date(),
+                    });
                     expect(requestStub.callCount).to.be.equal(1);
                 });
         });
@@ -106,13 +131,26 @@ describe('Runner', () => {
                 name: 'resource-test',
                 type: 'server',
                 data: {},
-                status: 'off',
+                status: 'on',
                 isEnabled: true,
                 creationDate: Date(),
             };
+
+            requestStub
+                .withArgs(resource)
+                .resolves('off');
+
             return runner.serviceMonitoring(resource)
                 .then((response) => {
-                    expect(response.status).to.be.equal('off');
+                    expect(response).to.be.eql({
+                        _id: '5bbead798c2a8a92339e88b8',
+                        name: 'resource-test',
+                        type: 'server',
+                        data: {},
+                        status: 'off',
+                        isEnabled: true,
+                        creationDate: Date(),
+                    });
                     expect(requestStub.callCount).to.be.equal(1);
                 });
         });
