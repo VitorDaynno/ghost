@@ -59,14 +59,16 @@ describe('Runner', () => {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
                 type: 'server',
-                data: {},
+                data: {
+                    url: 'url',
+                },
                 status: 'on',
                 isEnabled: true,
                 creationDate: Date(),
             };
 
             requestStub
-                .withArgs(resource)
+                .withArgs('url')
                 .resolves('on');
 
             return runner.serviceMonitoring(resource)
@@ -80,14 +82,16 @@ describe('Runner', () => {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
                 type: 'server',
-                data: {},
+                data: {
+                    url: 'url'
+                },
                 status: 'off',
                 isEnabled: true,
                 creationDate: Date(),
             };
 
             requestStub
-                .withArgs(resource)
+                .withArgs('url')
                 .resolves('off');
 
             return runner.serviceMonitoring(resource)
@@ -101,14 +105,16 @@ describe('Runner', () => {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
                 type: 'server',
-                data: {},
+                data: {
+                    url: 'url',
+                },
                 status: 'off',
                 isEnabled: true,
                 creationDate: Date(),
             };
 
             requestStub
-                .withArgs(resource)
+                .withArgs('url')
                 .resolves('on');
 
             return runner.serviceMonitoring(resource)
@@ -117,7 +123,9 @@ describe('Runner', () => {
                         _id: '5bbead798c2a8a92339e88b8',
                         name: 'resource-test',
                         type: 'server',
-                        data: {},
+                        data: {
+                            url: 'url',
+                        },
                         status: 'on',
                         isEnabled: true,
                         creationDate: Date(),
@@ -130,14 +138,16 @@ describe('Runner', () => {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
                 type: 'server',
-                data: {},
+                data: {
+                    url: 'url',
+                },
                 status: 'on',
                 isEnabled: true,
                 creationDate: Date(),
             };
 
             requestStub
-                .withArgs(resource)
+                .withArgs('url')
                 .resolves('off');
 
             return runner.serviceMonitoring(resource)
@@ -146,7 +156,9 @@ describe('Runner', () => {
                         _id: '5bbead798c2a8a92339e88b8',
                         name: 'resource-test',
                         type: 'server',
-                        data: {},
+                        data: {
+                            url: 'url',
+                        },
                         status: 'off',
                         isEnabled: true,
                         creationDate: Date(),

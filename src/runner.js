@@ -1,4 +1,5 @@
 const ping = require('ping');
+const axios = require('axios');
 const logger = require('./config/logger')();
 const FatoryDAO = require('./factories/factoryDAO');
 
@@ -34,7 +35,7 @@ const runner = {
             chain
                 .then(() => {
                     logger.info('[Runner] The method serviceMonitoring has started.');
-                    return this.requestService(resource);
+                    return this.requestService(resource.data.url);
                 })
                 .then((status) => {
                     logger.info(`[Runner] The resource <${JSON.stringify(resource)}> response is <${JSON.stringify(status)}>`);
@@ -49,8 +50,17 @@ const runner = {
         });
     },
 
-    requestService() {
-
+    requestService(url) {
+        return new Promise((resolve, reject) => {
+            axios.get(url)
+                .then(() => {
+                    resolve('on');
+                })
+                .catch((error) => {
+                    logger.error(`[Runner] An error occurred: ` + error);
+                    resolve('off')
+                })
+        });
     },
 
     monitoring() {
