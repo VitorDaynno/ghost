@@ -51,7 +51,7 @@ const runner = {
     },
 
     requestService(url) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios.get(url)
                 .then(() => {
                     resolve('on');
@@ -73,7 +73,6 @@ const runner = {
             const resourceDAO = FatoryDAO.getDAO('resource');
             let allResources = [];
             const filter = {
-                type: 'server',
                 isEnabled: true,
             };
             
@@ -83,8 +82,13 @@ const runner = {
                     let p = [];
                     for (let i = 0; i < resources.length; i += 1) {
                         let resource = resources[i];
-                        allResources.push(resource)
-                        p.push(this.serverMonitoring(resource));
+                        allResources.push(resource);
+                        if (resource.type == 'server') {
+                            p.push(this.serverMonitoring(resource));
+                        } else if (resource.type == 'service') {
+                            p.push(this.serviceMonitoring(resource));
+                        }
+                        
                     }
                     return Promise.all(p);
                 })
