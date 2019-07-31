@@ -58,7 +58,7 @@ describe('Runner', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
-                type: 'server',
+                type: 'service',
                 data: {
                     url: 'url',
                 },
@@ -81,7 +81,7 @@ describe('Runner', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
-                type: 'server',
+                type: 'service',
                 data: {
                     url: 'url'
                 },
@@ -104,7 +104,7 @@ describe('Runner', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
-                type: 'server',
+                type: 'service',
                 data: {
                     url: 'url',
                 },
@@ -122,7 +122,7 @@ describe('Runner', () => {
                     expect(response).to.be.eql({
                         _id: '5bbead798c2a8a92339e88b8',
                         name: 'resource-test',
-                        type: 'server',
+                        type: 'service',
                         data: {
                             url: 'url',
                         },
@@ -137,7 +137,7 @@ describe('Runner', () => {
             const resource = {
                 _id: '5bbead798c2a8a92339e88b8',
                 name: 'resource-test',
-                type: 'server',
+                type: 'service',
                 data: {
                     url: 'url',
                 },
@@ -155,7 +155,7 @@ describe('Runner', () => {
                     expect(response).to.be.eql({
                         _id: '5bbead798c2a8a92339e88b8',
                         name: 'resource-test',
-                        type: 'server',
+                        type: 'service',
                         data: {
                             url: 'url',
                         },
